@@ -8,6 +8,7 @@ import com.example.zoo.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,17 +40,17 @@ public class AnimalController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<byte[]> getAnimalById(@PathVariable("id") UUID id) {
+    public ResponseEntity<?> getAnimalById(@PathVariable("id") UUID id) {
         if(animalService.getAnimalById(id).isEmpty())
             return ResponseEntity.status(NOT_FOUND).body("Animal not found".getBytes());
-        return ResponseEntity.ok().body(animalService.getAnimalById(id).get().toString().getBytes());
+        return ResponseEntity.ok().body(animalService.getAnimalById(id).get());
     }
 
-    @GetMapping("{name}")
-    public ResponseEntity<byte[]> getAnimalByName(@PathVariable("name") String name) {
+    @GetMapping("/name/{name}")
+    public ResponseEntity<?> getAnimalByName(@PathVariable("name") String name) {
         if(animalService.getAnimalByName(name).isEmpty())
             return ResponseEntity.status(NOT_FOUND).body("Animal not found".getBytes());
-        return ResponseEntity.ok().body(animalService.getAnimalByName(name).get().toString().getBytes());
+        return ResponseEntity.ok().body(animalService.getAnimalByName(name).get());
     }
 
     @GetMapping("type/{type}")
@@ -77,7 +78,7 @@ public class AnimalController {
         return animalService.getAnimalsBySearch(search);
     }
 
-    @GetMapping("{name}/photo")
+    @GetMapping("/name/{name}/photo")
     public ResponseEntity<byte[]> getAnimalPhotoById(@PathVariable("name") String name) {
         Optional<Animal> animal = animalService.getAnimalByName(name);
         if(animal.isEmpty())
@@ -106,21 +107,21 @@ public class AnimalController {
         return ResponseEntity.status(CREATED).body("Animal added successfully".getBytes());
     }
 
-    @DeleteMapping("{name}")
+    @DeleteMapping("/name/{name}")
     public ResponseEntity<byte[]> deleteAnimalByName(@PathVariable("name") String name) {
         if(animalService.deleteAnimal(name) == 0)
             return ResponseEntity.status(NOT_FOUND).body("Animal not found".getBytes());
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("{name}")
+    @PutMapping("/name/{name}")
     public ResponseEntity<byte[]> updateAnimalByName(@PathVariable("name") String name, @RequestBody Animal animal) {
         if(animalService.updateAnimal(name, animal) == 0)
             return ResponseEntity.status(NOT_FOUND).body("Animal not found".getBytes());
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("{name}/photo")
+    @PutMapping("/name/{name}/photo")
     public ResponseEntity<byte[]> uploadAnimalImage(@PathVariable("name") String name, @RequestParam("image")MultipartFile image) {
         Optional<Animal> animal = animalService.getAnimalByName(name);
         if(animal.isEmpty())

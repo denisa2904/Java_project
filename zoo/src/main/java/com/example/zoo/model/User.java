@@ -2,14 +2,18 @@ package com.example.zoo.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "zoo_user")
-public class User {
+public class User implements UserDetails {
     @Id
     @GenericGenerator(
             name = "user_sequence",
@@ -32,8 +36,12 @@ public class User {
     private String phone;
     @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "role", nullable = false)
-    private String role;
+    /*@Column(name = "role", nullable = false)
+    private String role;*/
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Column(name = "theme", nullable = false)
     private String theme;
 
@@ -56,6 +64,7 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     List<Booking> bookings = new ArrayList<>();
+
     public User() {
     }
 
@@ -66,8 +75,8 @@ public class User {
         setEmail(email);
         setPhone(phone);
         setPassword(password);
-        setRole("user");
-        setTheme("light");
+        setRole("USER");
+        setTheme("LIGHT");
     }
 
     //setters
@@ -96,7 +105,8 @@ public class User {
     }
 
     public void setRole(String role) {
-        this.role = role;
+        /*this.role = role;*/
+        this.role = Role.valueOf(role);
     }
 
     public void setTheme(String theme) {
@@ -107,6 +117,7 @@ public class User {
     public UUID getId() {
         return id;
     }
+
     public String getFirstName() {
         return firstName;
     }
@@ -119,6 +130,36 @@ public class User {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+
     public String getEmail() {
         return email;
     }
@@ -127,12 +168,8 @@ public class User {
         return phone;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public String getRole() {
-        return role;
+        return this.role.name();
     }
 
     public String getTheme() {
