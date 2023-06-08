@@ -1,5 +1,6 @@
 package com.example.zoo.service;
 
+import com.example.zoo.model.Animal;
 import com.example.zoo.model.User;
 import com.example.zoo.repository.UserRepo;
 import jakarta.transaction.Transactional;
@@ -69,6 +70,32 @@ public class UserService {
             newUser.setFirstName(user.getFirstName());
             newUser.setLastName(user.getLastName());
             newUser.setPhone(user.getPhone());
+            userRepo.save(newUser);
+            return 1;
+        }
+        return 0;
+    }
+
+    public List<Animal> getUserFavorites(UUID userId) {
+        return userRepo.findUserById(userId).get().getFavorites();
+    }
+
+    public int addFavorite(UUID userId, Animal animal) {
+        Optional<User> user = userRepo.findUserById(userId);
+        if(user.isPresent()) {
+            User newUser = user.get();
+            newUser.addFavorite(animal);
+            userRepo.save(newUser);
+            return 1;
+        }
+        return 0;
+    }
+
+    public int removeFavorite(UUID userId, Animal animal) {
+        Optional<User> user = userRepo.findUserById(userId);
+        if(user.isPresent()) {
+            User newUser = user.get();
+            newUser.removeFavorite(animal);
             userRepo.save(newUser);
             return 1;
         }

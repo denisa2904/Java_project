@@ -1,19 +1,15 @@
 package com.example.zoo.service;
 
-import com.example.zoo.firebase.FirebaseStorageStrategy;
 import com.example.zoo.model.Animal;
-import com.example.zoo.model.Image;
 import com.example.zoo.repository.AnimalRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 @Service
 @Transactional

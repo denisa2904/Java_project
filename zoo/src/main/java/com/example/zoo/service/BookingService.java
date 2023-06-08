@@ -28,9 +28,4 @@ public class BookingService {
     public List<Booking> getBookingsByUserId(UUID userId) {
         return bookingRepo.findAllByUserId(userId);
     }
-
-    public int deleteBooking(UUID bookingId) {
-        bookingRepo.deleteById(bookingId);
-        return 1;
-    }
 }

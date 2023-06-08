@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,6 +22,9 @@ public class CommentService {
         return 1;
     }
 
+    public Optional<Comment> getCommentById(UUID commentId) {
+        return commentRepo.findById(commentId);
+    }
     public List<Comment> getCommentsByAnimalId(UUID animalId) {
         return commentRepo.findAllByAnimalId(animalId);
     }
@@ -34,12 +38,4 @@ public class CommentService {
         return 1;
     }
 
-    public int updateComment(UUID commentId, String content) {
-        if(commentRepo.findById(commentId).isEmpty())
-            return 0;
-        Comment c = commentRepo.findById(commentId).get();
-        c.setContent(content);
-        commentRepo.save(c);
-        return 1;
-    }
 }

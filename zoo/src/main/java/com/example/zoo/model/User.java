@@ -36,8 +36,6 @@ public class User implements UserDetails {
     private String phone;
     @Column(name = "password", nullable = false)
     private String password;
-    /*@Column(name = "role", nullable = false)
-    private String role;*/
 
     @Enumerated(EnumType.STRING)
     private Role role;
