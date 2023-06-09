@@ -56,7 +56,7 @@ public class ImageService {
         String oldImageLocation = "";
         if(oldImage.isPresent()) {
             oldImageLocation = oldImage.get().getLocation();
-            deleteImage(animalId);
+            deleteImage(oldImage.get().getId());
         }
 
         String animalName = animal.get().getName();

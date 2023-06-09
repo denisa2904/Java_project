@@ -44,6 +44,9 @@ public class Animal {
     @Column(name = "max_weight", nullable = false)
     private int maxWeight;
 
+    @OneToOne(mappedBy = "animal", cascade = CascadeType.ALL)
+    private Image image;
+
     public Animal() {
     }
 

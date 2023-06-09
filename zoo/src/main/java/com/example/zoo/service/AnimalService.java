@@ -102,7 +102,7 @@ public class AnimalService {
                     animals.addAll(animalRepo.findAllByConservation(conservation));
                 }
             }
-            else if(entry.getKey().equals("region")){
+            else if(entry.getKey().equals("origin")){
                 for(String origin : entry.getValue()){
                     animals.addAll(animalRepo.findAllByOriginContaining(origin));
                 }
@@ -123,10 +123,14 @@ public class AnimalService {
         Optional<Animal> oldAnimal = animalRepo.findAnimalByName(name);
         if(oldAnimal.isPresent()) {
             Animal newAnimal = oldAnimal.get();
-            newAnimal.setType(animal.getType());
-            newAnimal.setClimate(animal.getClimate());
-            newAnimal.setConservation(animal.getConservation());
-            newAnimal.setOrigin(animal.getOrigin());
+            if(animal.getType() != null)
+                newAnimal.setType(animal.getType());
+            if(animal.getClimate()!=null)
+                newAnimal.setClimate(animal.getClimate());
+            if(animal.getConservation()!=null)
+                newAnimal.setConservation(animal.getConservation());
+            if(animal.getOrigin()!=null)
+                newAnimal.setOrigin(animal.getOrigin());
             animalRepo.save(newAnimal);
             return 1;
         }

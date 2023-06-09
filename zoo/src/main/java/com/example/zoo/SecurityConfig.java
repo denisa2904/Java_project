@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/animals/name/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/animals/name/**").hasAuthority("ADMIN")
                 .requestMatchers("/api/animals/**").permitAll()
+                .requestMatchers("/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

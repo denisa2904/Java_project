@@ -1,9 +1,6 @@
 package com.example.zoo.api;
 
-import com.example.zoo.model.Animal;
-import com.example.zoo.model.Comment;
-import com.example.zoo.model.CommentHelper;
-import com.example.zoo.model.User;
+import com.example.zoo.model.*;
 import com.example.zoo.service.AnimalService;
 import com.example.zoo.service.CommentService;
 import com.example.zoo.service.UserService;
@@ -14,6 +11,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,8 +34,14 @@ public class CommentController {
     }
 
     @GetMapping("{id}/comments")
-    public List<Comment> getCommentsByAnimalId(@PathVariable("id") UUID id) {
-        return commentService.getCommentsByAnimalId(id);
+    public List<CommentResponse> getCommentsByAnimalId(@PathVariable("id") UUID id) {
+        List<Comment> comments = commentService.getCommentsByAnimalId(id);
+        List<CommentResponse> response = new ArrayList<>();
+        for(Comment com: comments) {
+            User user = com.getUser();
+            response.add(new CommentResponse(com.getContent(), user.getUsername(), com.getCreatedAt()));
+        }
+        return response;
     }
 
     @PostMapping("{id}/comments")

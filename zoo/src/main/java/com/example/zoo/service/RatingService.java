@@ -1,6 +1,7 @@
 package com.example.zoo.service;
 
 import com.example.zoo.model.Rating;
+import com.example.zoo.model.RatingResponse;
 import com.example.zoo.repository.RatingRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +23,22 @@ public class RatingService {
         return 1;
     }
 
-    public float getAverageRating(UUID animalId) {
+    public RatingResponse getAverageRating(UUID animalId) {
         List<Rating> ratings = ratingRepo.findAllByAnimalId(animalId);
         double sum = 0;
         for(Rating r : ratings) {
             sum += r.getValue();
         }
-        return (float) (sum / ratings.size());
+        if(ratings.size()==0)
+            return new RatingResponse(0, 0);
+        return new RatingResponse((float) (sum / ratings.size()), ratings.size());
     }
 
     public int getRatingByAnimalIdAndUserId(UUID animalId, UUID userId) {
-        return ratingRepo.findRatingByAnimalIdAndUserId(animalId, userId).get().getValue();
+        if(ratingRepo.findRatingByAnimalIdAndUserId(animalId, userId).isPresent()){
+            return ratingRepo.findRatingByAnimalIdAndUserId(animalId, userId).get().getValue();
+        }
+        return 0;
     }
 
     public int deleteRating(UUID animalId, UUID userId) {

@@ -1,6 +1,7 @@
 package com.example.zoo.api;
 
 import com.example.zoo.model.Rating;
+import com.example.zoo.model.RatingResponse;
 import com.example.zoo.model.User;
 import com.example.zoo.service.AnimalService;
 import com.example.zoo.service.RatingService;
@@ -26,8 +27,8 @@ public class RatingController {
     }
 
     @GetMapping("{id}/rating")
-    public float getRatingByAnimalId(@PathVariable("id") UUID id) {
-        return ratingService.getAverageRating(animalService.getAnimalById(id).get().getId());
+    public ResponseEntity<RatingResponse> getRatingByAnimalId(@PathVariable("id") UUID id) {
+        return ResponseEntity.status(200).body(ratingService.getAverageRating(animalService.getAnimalById(id).get().getId()));
     }
 
     @GetMapping("{id}/myRating")
@@ -36,7 +37,9 @@ public class RatingController {
         User user = userService.getUserByUsername(username);
         if(ratingService.getRatingByAnimalIdAndUserId(id, user.getId())==0)
             return ResponseEntity.status(404).body("Rating not found".getBytes());
-        return ResponseEntity.status(200).body(ratingService.getRatingByAnimalIdAndUserId(id, user.getId()));
+        return ResponseEntity.status(200).body(
+                new RatingResponse(ratingService.getRatingByAnimalIdAndUserId(id, user.getId()),1)
+        );
     }
 
 

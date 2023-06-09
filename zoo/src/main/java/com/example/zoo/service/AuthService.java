@@ -23,6 +23,14 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    public boolean validateNewUser(User user) {
+        if(user.getUsername().isEmpty() || user.getPassword().isEmpty() || user.getEmail().isEmpty()
+                || user.getFirstName().isEmpty() || user.getLastName().isEmpty() || user.getPhone().isEmpty())
+            return false;
+        if(repository.findUserByUsername(user.getUsername()).isPresent())
+            return false;
+        return repository.findUserByEmail(user.getEmail()).isEmpty();
+    }
     public AuthenticationResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
