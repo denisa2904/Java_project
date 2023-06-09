@@ -3,8 +3,10 @@ package com.example.zoo.service;
 import com.example.zoo.model.Animal;
 import com.example.zoo.model.User;
 import com.example.zoo.repository.UserRepo;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +17,14 @@ import java.util.UUID;
 @Transactional
 public class UserService {
 
+    private final UserRepo userRepo;
+    private final JwtService jwtService;
+
     @Autowired
-    private UserRepo userRepo;
+    public UserService(UserRepo userRepo, JwtService jwtService) {
+        this.userRepo = userRepo;
+        this.jwtService = jwtService;
+    }
 
     public boolean validateNewUser(User user) {
         if(user.getUsername().isEmpty() || user.getPassword().isEmpty() || user.getEmail().isEmpty()
@@ -25,6 +33,13 @@ public class UserService {
         if(userRepo.findUserByUsername(user.getUsername()).isPresent())
             return false;
         return userRepo.findUserByEmail(user.getEmail()).isEmpty();
+    }
+
+    public String getUsernameFromJwt(@NonNull HttpServletRequest request){
+        String authHeader = request.getHeader("Authorization");
+        String jwt;
+        jwt = authHeader.substring(7);
+        return jwtService.extractUsername(jwt);
     }
 
     public int addUser(User user) {

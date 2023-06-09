@@ -14,8 +14,6 @@ public class AnimalConfig {
         return args -> {
             for(int i = 1; i <= 10; ++i)
             {
-                /*Player player = new Player(faker.name().username());
-                repo.save(player);*/
                 Animal animal = new Animal("Animal" + i, "Binomial" + i, "Mammal", "Temperate", "Least Concern", "Europe", "Description", 3.5f, i*100, i*200);
                 repo.save(animal);
             }

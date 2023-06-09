@@ -2,6 +2,7 @@ package com.example.zoo.api;
 
 import com.example.zoo.firebase.FirebaseStorageStrategy;
 import com.example.zoo.model.Animal;
+import com.example.zoo.model.Criteria;
 import com.example.zoo.model.Image;
 import com.example.zoo.service.AnimalService;
 import com.example.zoo.service.ImageService;
@@ -95,9 +96,12 @@ public class AnimalController {
             return ResponseEntity.status(NOT_FOUND).body("Image not found".getBytes());
         }
     }
-    /*
+
     @PostMapping("criteria")
-     */
+    public List<Animal> getAnimalsByCriteria(@RequestBody Criteria criteria) {
+        return animalService.getAnimalsByCriteria(criteria);
+    }
+
 
     @PostMapping
     public ResponseEntity<byte[]> addAnimal(@RequestBody Animal animal) {

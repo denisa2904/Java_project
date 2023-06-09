@@ -1,15 +1,14 @@
 package com.example.zoo.service;
 
 import com.example.zoo.model.Animal;
+import com.example.zoo.model.Criteria;
 import com.example.zoo.repository.AnimalRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -78,6 +77,37 @@ public class AnimalService {
         animals.addAll(animalRepo.findAllByOriginContaining(search));
         animals.addAll(animalRepo.findAllByBinomialNameContaining(search));
         animals.addAll(animalRepo.findAllByDescriptionContaining(search));
+        return animals;
+    }
+
+    public List<Animal> getAnimalsByCriteria(Criteria criteria){
+        List<Animal> animals = new ArrayList<>();
+        Map<String, List<String>> criteriaMap = new HashMap<>();
+        System.out.println(criteria);
+        criteriaMap = criteria.getCriteria();
+        System.out.println(criteriaMap);
+        for(Map.Entry<String, List<String>> entry : criteriaMap.entrySet()){
+            if(entry.getKey().equals("type")){
+                for(String type : entry.getValue()){
+                    animals.addAll(animalRepo.findAllByTypeContaining(type));
+                }
+            }
+            else if(entry.getKey().equals("climate")){
+                for(String climate : entry.getValue()){
+                    animals.addAll(animalRepo.findAllByClimateContaining(climate));
+                }
+            }
+            else if(entry.getKey().equals("conservation")){
+                for(String conservation : entry.getValue()){
+                    animals.addAll(animalRepo.findAllByConservation(conservation));
+                }
+            }
+            else if(entry.getKey().equals("region")){
+                for(String origin : entry.getValue()){
+                    animals.addAll(animalRepo.findAllByOriginContaining(origin));
+                }
+            }
+        }
         return animals;
     }
     public int deleteAnimal(String name) {

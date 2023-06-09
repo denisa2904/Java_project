@@ -6,18 +6,13 @@ import com.example.zoo.model.CommentHelper;
 import com.example.zoo.model.User;
 import com.example.zoo.service.AnimalService;
 import com.example.zoo.service.CommentService;
-import com.example.zoo.service.JwtService;
 import com.example.zoo.service.UserService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,14 +26,12 @@ public class CommentController {
 
     private final CommentService commentService;
     private final AnimalService animalService;
-    private final JwtService jwtService;
     private final UserService userService;
 
     @Autowired
-    public CommentController(CommentService commentService, AnimalService animalService, JwtService jwtService, UserService userService) {
+    public CommentController(CommentService commentService, AnimalService animalService, UserService userService) {
         this.commentService = commentService;
         this.animalService = animalService;
-        this.jwtService = jwtService;
         this.userService = userService;
     }
 
@@ -48,16 +41,13 @@ public class CommentController {
     }
 
     @PostMapping("{id}/comments")
-    public ResponseEntity<byte[]> addComment(@PathVariable("id") UUID id, @RequestBody CommentHelper commentHelper,
+    public ResponseEntity<?> addComment(@PathVariable("id") UUID id, @RequestBody CommentHelper commentHelper,
                                              @NonNull HttpServletRequest request){
         Optional<Animal> animalMaybe = animalService.getAnimalById(id);
         if(animalMaybe.isEmpty())
-            return ResponseEntity.status(NOT_FOUND).body("Animal not found".getBytes());
+            return ResponseEntity.status(NOT_FOUND).body("Animal not found");
         Animal animal = animalMaybe.get();
-        String authHeader = request.getHeader("Authorization");
-        String jwt;
-        jwt = authHeader.substring(7);
-        String username = jwtService.extractUsername(jwt);
+        String username = userService.getUsernameFromJwt(request);
         User user = userService.getUserByUsername(username);
 
         Comment comment = new Comment();
@@ -66,8 +56,8 @@ public class CommentController {
         comment.setAnimal(animal);
         comment.setCreatedAt(LocalDateTime.now());
         if(commentService.addComment(comment) == 0)
-            return ResponseEntity.status(NOT_ACCEPTABLE).body("Comment not added".getBytes());
-        return ResponseEntity.status(CREATED).body("Comment added".getBytes());
+            return ResponseEntity.status(NOT_ACCEPTABLE).body("Comment not added");
+        return ResponseEntity.status(CREATED).body("Comment added");
     }
 
     @DeleteMapping("{id}/comments/{commentId}")
@@ -78,10 +68,7 @@ public class CommentController {
         if(animalMaybe.isEmpty())
             return ResponseEntity.status(NOT_FOUND).body("Animal not found".getBytes());
         Animal animal = animalMaybe.get();
-        String authHeader = request.getHeader("Authorization");
-        String jwt;
-        jwt = authHeader.substring(7);
-        String username = jwtService.extractUsername(jwt);
+        String username = userService.getUsernameFromJwt(request);
         User user = userService.getUserByUsername(username);
         Optional<Comment> commentMaybe = commentService.getCommentById(commentId);
         Comment comment;
